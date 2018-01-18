@@ -86,7 +86,39 @@ function step1(){
   }
 }
 
-step1();
+function step2(){
+  for (var delivery in deliveries){
+    for (var truck in truckers){
+      if(deliveries[delivery].truckerId == truckers[truck].id){
+        var price = truckers[truck].pricePerKm*deliveries[delivery].distance;
+        if(deliveries[delivery].volume > 5){
+          if(deliveries[delivery].volume > 10){
+            if(deliveries[delivery].volume > 25){
+              price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
+              price = price * 0.5;
+              deliveries[delivery].price = price;
+              break;
+            }
+            price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
+            price = price * 0.7;
+            deliveries[delivery].price = price;
+            break;
+          }
+          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
+          price = price * 0.9;
+          deliveries[delivery].price = price;
+          break;
+        }
+        else{
+          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
+          deliveries[delivery].price = price;
+        }
+      }
+    }
+  }
+}
+
+step2();
 
 //list of actors for payment
 //useful from step 5

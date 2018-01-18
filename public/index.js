@@ -72,6 +72,8 @@ var deliveries = [{
   }
 }];
 
+
+
 function step4(){
   for (var delivery in deliveries){
     if(deliveries[delivery].options.deductibleReduction == true){
@@ -141,6 +143,7 @@ function step2(){
 step2();
 step3();
 step4();
+
 
 
 //list of actors for payment
@@ -215,6 +218,35 @@ const actors = [{
     'amount': 0
   }]
 }];
+
+function step5(){
+  for (var actor in actors){
+    for (var delivery in deliveries){
+      if(deliveries[delivery].id == actors[actor].deliveryId){
+        for (var dif in actors[actor].payment){
+          console.log(actors[actor].payment[dif].who);
+          if(actors[actor].payment[dif].who == "shipper"){
+            actors[actor].payment[dif].amount = deliveries[delivery].price;
+          }
+          else if(actors[actor].payment[dif].who == "trucker"){
+            actors[actor].payment[dif].amount = deliveries[delivery].price - (deliveries[delivery].commission.insurance + deliveries[delivery].commission.convargo + deliveries[delivery].commission.treasury);
+          }
+          else if(actors[actor].payment[dif].who == "insurance"){
+            actors[actor].payment[dif].amount = deliveries[delivery].commission.insurance;
+          }
+          else if (actors[actor].payment[dif].who == "treasury"){
+            actors[actor].payment[dif].amount = deliveries[delivery].commission.treasury;
+          }
+          else if (actors[actor].payment[dif].who == "convargo"){
+            actors[actor].payment[dif].amount = deliveries[delivery].commission.convargo;
+          }
+        }
+      }
+    }
+  }
+}
+
+step5();
 
 
 

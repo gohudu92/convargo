@@ -72,6 +72,14 @@ var deliveries = [{
   }
 }];
 
+function step4(){
+  for (var delivery in deliveries){
+    if(deliveries[delivery].options.deductibleReduction == true){
+      deliveries[delivery].price = deliveries[delivery].price + deliveries[delivery].volume;
+    }
+  }
+}
+
 
 function step3(){
   for (var delivery in deliveries){
@@ -132,6 +140,8 @@ function step2(){
 
 step2();
 step3();
+step4();
+
 
 //list of actors for payment
 //useful from step 5

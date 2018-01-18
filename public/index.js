@@ -73,6 +73,18 @@ var deliveries = [{
 }];
 
 
+function step3(){
+  for (var delivery in deliveries){
+    var commission = deliveries[delivery].price*0.3;
+    var insurance = commission*0.5;
+    var treasury = deliveries[delivery].distance / 500;
+    var convargo = commission-(insurance+treasury);
+    deliveries[delivery].commission.insurance = insurance;
+    deliveries[delivery].commission.treasury = treasury;
+    deliveries[delivery].commission.convargo = convargo;
+  }
+}
+
 
 function step1(){
   for (var delivery in deliveries){
@@ -119,6 +131,7 @@ function step2(){
 }
 
 step2();
+step3();
 
 //list of actors for payment
 //useful from step 5

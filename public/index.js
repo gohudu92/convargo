@@ -3,7 +3,7 @@
 //list of truckers
 //useful for ALL 5 steps
 //could be an array of objects that you fetched from api or database
-const truckers = [{
+var truckers = [{
   'id': 'f944a3ff-591b-4d5b-9b67-c7e08cba9791',
   'name': 'les-routiers-bretons',
   'pricePerKm': 0.05,
@@ -25,7 +25,7 @@ const truckers = [{
 //The `price` is updated from step 1 and 2
 //The `commission` is updated from step 3
 //The `options` is useful from step 4
-const deliveries = [{
+var deliveries = [{
   'id': 'bba9500c-fd9e-453f-abf1-4cd8f52af377',
   'shipper': 'bio-gourmet',
   'truckerId': 'f944a3ff-591b-4d5b-9b67-c7e08cba9791',
@@ -71,6 +71,22 @@ const deliveries = [{
     'convargo': 0
   }
 }];
+
+
+
+function step1(){
+  for (var delivery in deliveries){
+    for (var truck in truckers){
+      if(deliveries[delivery].truckerId == truckers[truck].id){
+        var price = truckers[truck].pricePerKm*deliveries[delivery].distance;
+        price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
+        deliveries[delivery].price = price;
+      }
+    }
+  }
+}
+
+step1();
 
 //list of actors for payment
 //useful from step 5
@@ -144,6 +160,9 @@ const actors = [{
     'amount': 0
   }]
 }];
+
+
+
 
 console.log(truckers);
 console.log(deliveries);

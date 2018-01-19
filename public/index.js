@@ -74,7 +74,7 @@ var deliveries = [{
 
 
 
-function step4(){
+function deductible(){
   for (var delivery in deliveries){
     if(deliveries[delivery].options.deductibleReduction == true){
       deliveries[delivery].price = deliveries[delivery].price + deliveries[delivery].volume;
@@ -83,12 +83,22 @@ function step4(){
 }
 
 
-function step3(){
+function commission(){
   for (var delivery in deliveries){
-    var commission = deliveries[delivery].price*0.3;
+    var deductible;
+    var price;
+    if(deliveries[delivery].options.deductibleReduction == true){
+      deductible = deliveries[delivery].volume;
+      price = deliveries[delivery].price - deductible;
+    }
+    else{
+      deductible = 0;
+      price = deliveries[delivery].price;
+    }
+    var commission = price*0.3;
     var insurance = commission*0.5;
-    var treasury = deliveries[delivery].distance / 500;
-    var convargo = commission-(insurance+treasury);
+    var treasury = Math.ceil(deliveries[delivery].distance / 500);
+    var convargo = commission-(insurance+treasury) + deductible;
     deliveries[delivery].commission.insurance = insurance;
     deliveries[delivery].commission.treasury = treasury;
     deliveries[delivery].commission.convargo = convargo;
@@ -96,7 +106,7 @@ function step3(){
 }
 
 
-function step1(){
+function shippingPrices(){
   for (var delivery in deliveries){
     for (var truck in truckers){
       if(deliveries[delivery].truckerId == truckers[truck].id){
@@ -108,28 +118,22 @@ function step1(){
   }
 }
 
-function step2(){
+function decreasingPricesForHighVolume(){
   for (var delivery in deliveries){
     for (var truck in truckers){
       if(deliveries[delivery].truckerId == truckers[truck].id){
         var price = truckers[truck].pricePerKm*deliveries[delivery].distance;
-        if(deliveries[delivery].volume > 5){
-          if(deliveries[delivery].volume > 10){
-            if(deliveries[delivery].volume > 25){
-              price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
-              price = price * 0.5;
-              deliveries[delivery].price = price;
-              break;
-            }
-            price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
-            price = price * 0.7;
-            deliveries[delivery].price = price;
-            break;
-          }
-          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
-          price = price * 0.9;
+        if(deliveries[delivery].volume > 25){
+          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume*0.5;
           deliveries[delivery].price = price;
-          break;
+        }
+        else if(deliveries[delivery].volume > 10){
+          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume*0.7;
+          deliveries[delivery].price = price;
+        }
+        else if(deliveries[delivery].volume > 5){
+          price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume*0.9;
+          deliveries[delivery].price = price;
         }
         else{
           price = price + truckers[truck].pricePerVolume*deliveries[delivery].volume;
@@ -140,9 +144,9 @@ function step2(){
   }
 }
 
-step2();
-step3();
-step4();
+decreasingPricesForHighVolume();
+commission();
+deductible();
 
 
 
@@ -219,17 +223,26 @@ const actors = [{
   }]
 }];
 
-function step5(){
+function theActors(){
   for (var actor in actors){
     for (var delivery in deliveries){
       if(deliveries[delivery].id == actors[actor].deliveryId){
         for (var dif in actors[actor].payment){
-          console.log(actors[actor].payment[dif].who);
           if(actors[actor].payment[dif].who == "shipper"){
             actors[actor].payment[dif].amount = deliveries[delivery].price;
           }
           else if(actors[actor].payment[dif].who == "trucker"){
-            actors[actor].payment[dif].amount = deliveries[delivery].price - (deliveries[delivery].commission.insurance + deliveries[delivery].commission.convargo + deliveries[delivery].commission.treasury);
+            var deductible;
+            var price;
+            if(deliveries[delivery].options.deductibleReduction == true){
+              deductible = deliveries[delivery].volume;
+              price = deliveries[delivery].price - deductible;
+            }
+            else {
+              deductible = 0;
+              price = deliveries[delivery].price;
+            }
+            actors[actor].payment[dif].amount = price - (deliveries[delivery].commission.insurance + (deliveries[delivery].commission.convargo - deductible) + deliveries[delivery].commission.treasury);
           }
           else if(actors[actor].payment[dif].who == "insurance"){
             actors[actor].payment[dif].amount = deliveries[delivery].commission.insurance;
@@ -246,7 +259,7 @@ function step5(){
   }
 }
 
-step5();
+theActors();
 
 
 
